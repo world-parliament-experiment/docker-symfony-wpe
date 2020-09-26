@@ -6,18 +6,18 @@ services:
         volumes:
             - "pgdata:/var/lib/postgresql/data"
         environment:
-            POSTGRES_DATABASE: ${POSTGRES_DATABASE}
-            POSTGRES_USER: ${POSTGRES_USER}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DATABASE: mydb
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: userpass
         ports:
             - 5432:5432
     php:
         build:
             context: php7-fpm
             args:
-                TIMEZONE: ${TIMEZONE}
+                TIMEZONE:  Berlin
         volumes:
-            - ${SYMFONY_APP_PATH}:/var/www/symfony
+            - ../wpe/:/var/www/symfony
             - ./logs/symfony:/var/www/symfony/app/logs
         ports:
             - 9000:9000
