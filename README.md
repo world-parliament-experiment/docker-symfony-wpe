@@ -8,12 +8,11 @@ Docker-symfony gives you everything you need for developing Symfony application.
 
 ## Installation
 
-1. Create a `.env` from the `.env.dist` file. Adapt it according to your symfony application
+1. Adjust path to your WPE folder location in `docker-compose.yaml` In default it refers to a folder(line 20 atm)
 
-    ```bash
-    cp .env.dist .env
     ```
-
+    - ../wpe/:/var/www/symfony
+    ```
 
 2. Build/run containers with (with and without detached mode)
 
@@ -22,7 +21,7 @@ Docker-symfony gives you everything you need for developing Symfony application.
     $ docker-compose up -d
     ```
 
-3. Update your system host file (add symfony.local)
+3. Update your system host file (add symfony.local)  (optional)
 
     ```bash
     # UNIX only: get containers IP address and update host (replace IP according to your configuration) (on Windows, edit C:\Windows\System32\drivers\etc\hosts)
@@ -45,19 +44,14 @@ Docker-symfony gives you everything you need for developing Symfony application.
         ```bash
         $ docker-compose exec php bash
         $ composer install
-        # Symfony2
-        $ sf doctrine:database:create
-        $ sf doctrine:schema:update --force
-        # Only if you have `doctrine/doctrine-fixtures-bundle` installed
-        $ sf doctrine:fixtures:load --no-interaction
         # Symfony3
         $ sf3 doctrine:database:create
         $ sf3 doctrine:schema:update --force
-        # Only if you have `doctrine/doctrine-fixtures-bundle` installed
         $ sf3 doctrine:fixtures:load --no-interaction
         ```
+5. Open the elk container in your browser. (e.g. symfony.local:81 or localhost:81)
 
-5. Enjoy :-)
+6. Open symfony.local or localhost, wait a bit and enjoy :-)
 
 ## Usage
 
