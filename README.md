@@ -93,6 +93,8 @@ By following the installation steps below, it is possible to view a local versio
     ```bash
     composer install
     ```
+    
+Make sure to exit the docker container by pressing `Ctrl + D`
 
 11. The web server we started employs a user named `www-data` to access files. We need to give this user permission to do so.
     ```bash
