@@ -1,6 +1,6 @@
 # Docker Symfony (PHP7-FPM - NGINX - MySQL - ELK)
 
-This repository builds upon https://travis-ci.org/maxpou/docker-symfony.
+This repository builds upon https://github.com/maxpou/docker-symfony.
 
 By following the installation steps below, it is possible to view a local version of the World Parliament Experiment website. This allows to change the website's content and test new features before they are deployed to the actual website.
 
