@@ -6,7 +6,7 @@ services:
         volumes:
             - "pgdata:/var/lib/postgresql/data"
         environment:
-            POSTGRES_DATABASE: mydb
+            #POSTGRES_DB: ${POSTGRES_DB} --> seems not to work, TODO: FIX. Default database name is "user"
             POSTGRES_USER: user
             POSTGRES_PASSWORD: userpass
         ports:
@@ -15,9 +15,9 @@ services:
         build:
             context: php7-fpm
             args:
-                TIMEZONE:  Berlin
+                TIMEZONE: ${TIMEZONE}
         volumes:
-            - ../wpe/:/var/www/symfony
+            - ${SYMFONY_APP_PATH}:/var/www/symfony
             - ./logs/symfony:/var/www/symfony/app/logs
         ports:
             - 9000:9000
