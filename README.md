@@ -89,17 +89,27 @@ By following the installation steps below, it is possible to view a local versio
 
     You are now "inside" the docker container at location `/var/www/symfony# `
 
-10. While inside the container, we will use the software Composer (https://getcomposer.org/doc/00-intro.md) to install libraries which our project depends on. In order to use composer to install the dependencies, run
+10. While inside the docker container, we will use the software Composer (https://getcomposer.org/doc/00-intro.md) to install libraries which our project depends on. In order to use composer to install the dependencies, run
     ```bash
     composer install
     ```
     
-Make sure to exit the docker container by pressing `Ctrl + D`
+11. Still inside the docker container, we will now use Doctrine in order to automatically create all the database tables needed for every known entity in our application.
+    ```bash
+    sf3 doctrine:schema:update --force
+    ```
 
-11. The web server we started employs a user named `www-data` to access files. We need to give this user permission to do so.
+12. Still inside the docker container, we will use so-called Fixtures. These Fixtures are used to load a “fake” set of data into a database that we can then use for testing and give us some interesting data while we are developing our application.
+    ```bash
+    sf3 doctrine:fixtures:load --no-interaction
+    ```
+    
+13. Make sure to exit the docker container by pressing `Ctrl + D`
+
+14. The web server we started employs a user named `www-data` to access files. We need to give this user permission to do so.
     ```bash
     cd $WPE_ROOT/WPE
     sudo chown -R www-data:www-data var/
     ```
 
-    You cann now open [wpe.local](wpe.local) in you browser. This should show you the WPE website, as currently set up by the code in your local WPE repository `$WPE_ROOT/WPE`
+You can now open wpe.local in your browser. This should show you the WPE website, as currently set up by the code in your local WPE repository `$WPE_ROOT/WPE`
