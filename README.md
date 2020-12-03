@@ -1,143 +1,115 @@
 # Docker Symfony (PHP7-FPM - NGINX - MySQL - ELK)
 
-[![Build Status](https://travis-ci.org/maxpou/docker-symfony.svg?branch=master)](https://travis-ci.org/maxpou/docker-symfony)
+This repository builds upon https://github.com/maxpou/docker-symfony.
 
-![](doc/schema.png)
+By following the installation steps below, it is possible to view a local version of the World Parliament Experiment website. This allows to change the website's content and test new features before they are deployed to the actual website.
 
-Docker-symfony gives you everything you need for developing Symfony application. This complete stack run with docker and [docker-compose (1.7 or higher)](https://docs.docker.com/compose/).
+# Installation
 
-## Installation
+## Ubuntu
 
-1. Adjust path to your WPE folder location in `docker-compose.yaml` In default it refers to a folder(line 20 atm)
+### Prerequisites
+- Ubuntu 16.04 LTS or newer (https://ubuntu.com/download)
+- Git version control: `$ sudo apt-get install git`
+- Docker (Installation: https://docs.docker.com/engine/install/ubuntu/)
+- Docker Compose (Installation: https://docs.docker.com/compose/install/)
 
-    ```
-    - ../wpe/:/var/www/symfony
-    ```
-
-2. Build/run containers with (with and without detached mode)
-
+### Installation procedure
+1. Create folder "world-parliament", e.g. in your home directory `/home/$USER/`
     ```bash
-    $ docker-compose build
-    $ docker-compose up -d
+    mkdir world-parliament
     ```
 
-3. Update your system host file (add symfony.local)  (optional)
-
+2. Switch to the created directory
     ```bash
-    # UNIX only: get containers IP address and update host (replace IP according to your configuration) (on Windows, edit C:\Windows\System32\drivers\etc\hosts)
-    $ sudo echo $(docker network inspect bridge | grep Gateway | grep -o -E '([0-9]{1,3}\.){3}[0-9]{1,3}') "symfony.local" >> /etc/hosts
+    cd world-parliament
+    ```
+    From now on, we will call this directory
+    ```bash
+    $WPE_ROOT
+    ```
+    
+    When you encounter `$WPE_ROOT` in this readme, then you will need to replace it with the location of your folder `world-parliament`, e.g. `/home/$USER/world-parliament`
+
+3. Clone the WPE repository which contains all the website's code
+    ```bash
+    cd $WPE_ROOT
+    git clone https://github.com/world-parliament-experiment/WPE.git
     ```
 
-    **Note:** For **OS X**, please take a look [here](https://docs.docker.com/docker-for-mac/networking/) and for **Windows** read [this](https://docs.docker.com/docker-for-windows/#/step-4-explore-the-application-and-run-examples) (4th step).
+4. Clone the docker-symfony-wpe repository which allows to test the website's code in a docker container.
+    ```bash
+    cd $WPE_ROOT
+    git clone https://github.com/world-parliament-experiment/docker-symfony-wpe.git
+    ```
 
-4. Prepare Symfony app
-    1. Update app/config/parameters.yml
+5. Build the docker images. When done for the first time, this will take some time because parts of the images have to be downloaded from the internet first.
+    ```bash
+    cd $WPE_ROOT/docker-symfony-wpe
+    docker-compose build
+    ```
 
-        ```yml
-        # path/to/your/symfony-project/app/config/parameters.yml
-        parameters:
-            database_host: db
-        ```
+6. Build, (re)create, start, and run the containers in detached mode (`-d`) / in the background (This may as well take some time).
+    ```bash
+    cd $WPE_ROOT/docker-symfony-wpe
+    docker-compose up -d
+    ```
+    When succussfull, you should see this:
 
-    2. Composer install & create database
+    ![docker-compose up -d successfull](doc/docker-compose_up-d_successfull.png)
 
-        ```bash
-        $ docker-compose exec php bash
-        $ composer install
-        # Symfony3
-        $ sf3 doctrine:database:create
-        $ sf3 doctrine:schema:update --force
-        $ sf3 doctrine:fixtures:load --no-interaction
-        ```
-5. Open the elk container in your browser. (e.g. symfony.local:81 or localhost:81)
+7. You can list running docker containers using the following command. It should list four running containers.
+    ```bash
+    docker ps
+    ```
 
-6. Open symfony.local or localhost, wait a bit and enjoy :-)
+8. We later want to open the local wpe website through its name and not through its IP address. That's why we tell the computer what IP address to open when we use the name of the local wpe website in our browser. We choose the the name `wpe.local`. We add the name and the corresponding IP Adress to the list of known hosts. To do so, we need to be in a root shell:
+    ```bash
+    sudo su
+    ```
 
-## Usage
+    Now, we can add the IP address and the name to the hosts file.
+    ```bash
+    echo $(docker network inspect bridge | sudo grep Gateway | sudo grep -o -E '([0-9]{1,3}\.){3}[0-9]{1,3}') "wpe.local" >> /etc/hosts
+    ```
 
-Just run `docker-compose up -d`, then:
+    Make sure to exit the root shell by pressing `Ctrl + D`
 
-* Symfony app: visit [symfony.local](http://symfony.local)  
-* Symfony dev mode: visit [symfony.local/app_dev.php](http://symfony.local/app_dev.php)  
-* Logs (Kibana): [symfony.local:81](http://symfony.local:81)
-* Logs (files location): logs/nginx and logs/symfony
+    To check whether this was successfull, you can now open [wpe.local](wpe.local) in you browser. When succusfull, a website will open which - among other things - shows you an error message like 
 
-## Customize
+    `( ! ) Warning: require(/var/www/symfony/web/../vendor/autoload.php): failed to open stream: No such file or directory in /var/www/symfony/web/app.php on line 5`
 
-If you want to add optionnals containers like Redis, PHPMyAdmin... take a look on [doc/custom.md](doc/custom.md).
+    The website is not properly running yet, so don't worry.
 
-## How it works?
+9. Attach to the running php docker container and open the command line interpreter bash
+    ```bash
+    cd $WPE_ROOT/docker-symfony-wpe
+    docker-compose exec php bash
+    ```
 
-Have a look at the `docker-compose.yml` file, here are the `docker-compose` built images:
+    You are now "inside" the docker container at location `/var/www/symfony# `
 
-* `db`: This is the MySQL database container,
-* `php`: This is the PHP-FPM container in which the application volume is mounted,
-* `nginx`: This is the Nginx webserver container in which application volume is mounted too,
-* `elk`: This is a ELK stack container which uses Logstash to collect logs, send them into Elasticsearch and visualize them with Kibana.
+10. While inside the docker container, we will use the software Composer (https://getcomposer.org/doc/00-intro.md) to install libraries which our project depends on. In order to use composer to install the dependencies, run
+    ```bash
+    composer install
+    ```
+    
+11. Still inside the docker container, we will now use Doctrine in order to automatically create all the database tables needed for every known entity in our application.
+    ```bash
+    sf3 doctrine:schema:update --force
+    ```
 
-This results in the following running containers:
+12. Still inside the docker container, we will use so-called Fixtures. These Fixtures are used to load a “fake” set of data into a database that we can then use for testing and give us some interesting data while we are developing our application.
+    ```bash
+    sf3 doctrine:fixtures:load --no-interaction
+    ```
+    
+13. Make sure to exit the docker container by pressing `Ctrl + D`
 
-```bash
-$ docker-compose ps
-           Name                          Command               State              Ports            
---------------------------------------------------------------------------------------------------
-dockersymfony_db_1            /entrypoint.sh mysqld            Up      0.0.0.0:3306->3306/tcp      
-dockersymfony_elk_1           /usr/bin/supervisord -n -c ...   Up      0.0.0.0:81->80/tcp          
-dockersymfony_nginx_1         nginx                            Up      443/tcp, 0.0.0.0:80->80/tcp
-dockersymfony_php_1           php-fpm                          Up      0.0.0.0:9000->9000/tcp      
-```
+14. The web server we started employs a user named `www-data` to access files. We need to give this user permission to do so.
+    ```bash
+    cd $WPE_ROOT/WPE
+    sudo chown -R www-data:www-data var/
+    ```
 
-## Useful commands
-
-```bash
-# bash commands
-$ docker-compose exec php bash
-
-# Composer (e.g. composer update)
-$ docker-compose exec php composer update
-
-# SF commands (Tips: there is an alias inside php container)
-$ docker-compose exec php php /var/www/symfony/app/console cache:clear # Symfony2
-$ docker-compose exec php php /var/www/symfony/bin/console cache:clear # Symfony3
-# Same command by using alias
-$ docker-compose exec php bash
-$ sf cache:clear
-
-# Retrieve an IP Address (here for the nginx container)
-$ docker inspect --format '{{ .NetworkSettings.Networks.dockersymfony_default.IPAddress }}' $(docker ps -f name=nginx -q)
-$ docker inspect $(docker ps -f name=nginx -q) | grep IPAddress
-
-# MySQL commands
-$ docker-compose exec db mysql -uroot -p"root"
-
-# F***ing cache/logs folder
-$ sudo chmod -R 777 app/cache app/logs # Symfony2
-$ sudo chmod -R 777 var/cache var/logs var/sessions # Symfony3
-
-# Check CPU consumption
-$ docker stats $(docker inspect -f "{{ .Name }}" $(docker ps -q))
-
-# Delete all containers
-$ docker rm $(docker ps -aq)
-
-# Delete all images
-$ docker rmi $(docker images -q)
-```
-
-## FAQ
-
-* Got this error: `ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
-If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.` ?  
-Run `docker-compose up -d` instead.
-
-* Permission problem? See [this doc (Setting up Permission)](http://symfony.com/doc/current/book/installation.html#checking-symfony-application-configuration-and-setup)
-
-* How to config Xdebug?
-Xdebug is configured out of the box!
-Just config your IDE to connect port  `9001` and id key `PHPSTORM`
-
-## Contributing
-
-First of all, **thank you** for contributing ♥  
-If you find any typo/misconfiguration/... please send me a PR or open an issue. You can also ping me on [twitter](https://twitter.com/_maxpou).  
-Also, while creating your Pull Request on GitHub, please write a description which gives the context and/or explains why you are creating it.
+You can now open wpe.local in your browser. This should show you the WPE website, as currently set up by the code in your local WPE repository `$WPE_ROOT/WPE`
