@@ -22,7 +22,7 @@ RUN apt-get install -y libpq-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql
 
-RUN apt-get install zlib1g-dev
+RUN apt-get install -y zlib1g-dev
 RUN docker-php-ext-install zlib; exit 0
 #Now we rename the in step 1 downloaded file to desired filename
 RUN cp /usr/src/php/ext/zlib/config0.m4 /usr/src/php/ext/zlib/config.m4
