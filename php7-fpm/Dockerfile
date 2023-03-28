@@ -1,5 +1,5 @@
 # See https://github.com/docker-library/php/blob/master/7.1/fpm/Dockerfile
-FROM php:7.2-fpm
+FROM php:7.4-fpm
 ARG TIMEZONE
 
 MAINTAINER Maxence POUTORD <maxence.poutord@gmail.com>
@@ -29,12 +29,17 @@ RUN cp /usr/src/php/ext/zlib/config0.m4 /usr/src/php/ext/zlib/config.m4
 #And try to install extension again, this time it works
 RUN docker-php-ext-install zlib
 # Type docker-php-ext-install to see available extensions
-RUN docker-php-ext-install pdo pdo_mysql exif zip
+RUN docker-php-ext-install pdo pdo_mysql exif 
+
+RUN apt-get update \
+     && apt-get install -y libzip-dev \
+     && docker-php-ext-install zip
 
 
 # install xdebug
-RUN pecl install xdebug \
-&& docker-php-ext-enable xdebug \
+RUN pecl install xdebug-2.9.2
+
+RUN docker-php-ext-enable xdebug \
 && echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
 && echo "display_startup_errors = On" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
 && echo "display_errors = On" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
