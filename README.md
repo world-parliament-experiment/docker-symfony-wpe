@@ -1,4 +1,4 @@
-# Docker Symfony (PHP7-FPM - NGINX - MySQL - ELK)
+# Docker Symfony (PH:P8.1-apache - Postgres DB)
 
 This repository builds upon https://github.com/maxpou/docker-symfony.
 
@@ -58,40 +58,22 @@ By following the installation steps below, it is possible to view a local versio
 
     ![docker-compose up -d successfull](doc/docker-compose_up-d_successfull.png)
 
-7. You can list running docker containers using the following command. It should list four running containers.
+7. You can list running docker containers using the following command. It should list two running containers.
     ```bash
     docker ps
     ```
 
-8. We later want to open the local wpe website through its name and not through its IP address. That's why we tell the computer what IP address to open when we use the name of the local wpe website in our browser. We choose the the name `wpe.local`. We add the name and the corresponding IP Adress to the list of known hosts. To do so, we need to be in a root shell:
-    ```bash
-    sudo su
-    ```
-
-    Now, we can add the IP address and the name to the hosts file.
-    ```bash
-    echo $(docker network inspect bridge | sudo grep Gateway | sudo grep -o -E '([0-9]{1,3}\.){3}[0-9]{1,3}') "wpe.local" >> /etc/hosts
-    ```
-
-    Make sure to exit the root shell by pressing `Ctrl + D`
-
-    To check whether this was successfull, you can now open [wpe.local](wpe.local) in you browser. When succusfull, a website will open which - among other things - shows you an error message like 
-
-    `( ! ) Warning: require(/var/www/symfony/web/../vendor/autoload.php): failed to open stream: No such file or directory in /var/www/symfony/web/app.php on line 5`
-
-    The website is not properly running yet, so don't worry.
-
-9. Attach to the running php docker container and open the command line interpreter bash
+9. Attach to the running web docker container and open the command line interpreter bash
     ```bash
     cd $WPE_ROOT/docker-symfony-wpe
-    docker-compose exec php bash
+    docker-compose exec web bash
     ```
 
     You are now "inside" the docker container at location `/var/www/symfony# `
 
 10. While inside the docker container, we will use the software Composer (https://getcomposer.org/doc/00-intro.md) to install libraries which our project depends on. In order to use composer to install the dependencies, run
     ```bash
-    composer install
+    composer install -n
     ```
     
 11. Still inside the docker container, we will now use Doctrine in order to automatically create all the database tables needed for every known entity in our application.
@@ -106,10 +88,4 @@ By following the installation steps below, it is possible to view a local versio
     
 13. Make sure to exit the docker container by pressing `Ctrl + D`
 
-14. The web server we started employs a user named `www-data` to access files. We need to give this user permission to do so.
-    ```bash
-    cd $WPE_ROOT/WPE
-    sudo chown -R www-data:www-data var/
-    ```
-
-You can now open wpe.local in your browser. This should show you the WPE website, as currently set up by the code in your local WPE repository `$WPE_ROOT/WPE`
+You can now open the address "wpe.local:8080 or localhost:8080" in your browser. This should show you the WPE website, as currently set up by the code in your local WPE repository `$WPE_ROOT/WPE`

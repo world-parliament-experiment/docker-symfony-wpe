@@ -1,43 +1,28 @@
-version: '2'
+version: '3'
 
 services:
     db:
         image: postgres:alpine
         volumes:
-            - "pgdata:/var/lib/postgresql/data"
+            - pgdata:/var/lib/postgresql/data
         environment:
-            #POSTGRES_DB: ${POSTGRES_DB} --> seems not to work, TODO: FIX. Default database name is "user"
+            POSTGRES_DB: wpe
             POSTGRES_USER: user
             POSTGRES_PASSWORD: userpass
         ports:
             - 5432:5432
-    php:
+    web:
+        image: php:8.1-apache
+        depends_on:
+            - db
         build:
-            context: php7-fpm
+            context: php8-apache
             args:
                 TIMEZONE: ${TIMEZONE}
         volumes:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
             - ./logs/symfony:/var/www/symfony/app/logs
         ports:
-            - 9000:9000
-    nginx:
-        build: nginx
-        ports:
-            - 80:80
-        volumes_from:
-            - php
-        volumes:
-            - ./logs/nginx/:/var/log/nginx
-    elk:
-        image: willdurand/elk
-        ports:
-            - 81:80
-        volumes:
-            - ./elk/logstash:/etc/logstash
-            - ./elk/logstash/patterns:/opt/logstash/patterns
-        volumes_from:
-            - php
-            - nginx
+            - 8080:80
 volumes:
-       pgdata:
+    pgdata:
