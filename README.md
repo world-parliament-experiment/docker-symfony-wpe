@@ -1,4 +1,4 @@
-# Docker Symfony (PH:P8.1-apache - Postgres DB)
+# Docker Symfony (PHP:8.1-apache - Postgres DB)
 
 This repository builds upon https://github.com/maxpou/docker-symfony.
 
