@@ -1,8 +1,6 @@
-# Docker Symfony (PHP:8.1-apache - Postgres DB)
+# Docker Symfony Environment for the World Parliament Experiment (PHP:8.1-apache - Postgres DB)
 
-This repository builds upon https://github.com/maxpou/docker-symfony.
-
-By following the installation steps below, it is possible to view a local version of the World Parliament Experiment website. This allows to change the website's content and test new features before they are deployed to the actual website.
+By following the installation steps below, it is possible to view a local version of the [**World Parliament Experiment**][1] website. This allows to change the website's content and test new features before they are deployed to the actual website.
 
 # Installation
 
@@ -89,3 +87,5 @@ By following the installation steps below, it is possible to view a local versio
 13. Make sure to exit the docker container by pressing `Ctrl + D`
 
 You can now open the address "wpe.local:8080 or localhost:8080" in your browser. This should show you the WPE website, as currently set up by the code in your local WPE repository `$WPE_ROOT/WPE`
+
+[1]: https://www.world-parliament.org
