@@ -1,6 +1,9 @@
 # Docker Symfony Environment for the World Parliament Experiment (PHP:8.1-apache - Postgres DB)
 
-By following the installation steps below, it is possible to view a local version of the [**World Parliament Experiment**][1] website. This allows to change the website's content and test new features before they are deployed to the actual website.
+By following the installation steps below, it is possible to view, test and contribute by creating a local version of the [**World Parliament Experiment**][1] website. 
+Github for the Project: https://github.com/world-parliament-experiment/WPE
+
+
 
 # Installation
 
@@ -47,14 +50,11 @@ By following the installation steps below, it is possible to view a local versio
     docker-compose build
     ```
 
-6. Build, (re)create, start, and run the containers in detached mode (`-d`) / in the background (This may as well take some time).
+6. Build, (re)create, start, and run the containers in detached mode (`-d`) / in the background
     ```bash
     cd $WPE_ROOT/docker-symfony-wpe
     docker-compose up -d
     ```
-    When succussfull, you should see this:
-
-    ![docker-compose up -d successfull](doc/docker-compose_up-d_successfull.png)
 
 7. You can list running docker containers using the following command. It should list two running containers.
     ```bash
